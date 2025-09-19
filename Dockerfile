@@ -1,5 +1,11 @@
-FROM nginx:latest
+FROM python:3.12-alpine
 
-WORKDIR /usr/share/nginx/html/
+WORKDIR /app
 
-COPY ./login.html .
+COPY ./requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ./app.py .
+
+CMD ["python3","app.py"]

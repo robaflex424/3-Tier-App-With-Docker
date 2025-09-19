@@ -1,5 +1,3 @@
 login.html
 Dockerfile.bak
-app/
 .dockerignore
-docker-compose.yml

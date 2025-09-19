@@ -1,0 +1,39 @@
+services:
+  flask: 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app/app.py:/app/app.py
+    ports:
+      - 5000:5000
+    environment:
+      DB_HOST: mysql
+      DB_NAME: mysql-db
+      DB_USER: user
+      DB_PASS: mysqlpassword
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - redis
+      - mysql
+  
+  mysql:
+    image: mysql:8.4.0
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqlrootpassword
+      MYSQL_DATABASE: mysql_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: mysqlpassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+    
+  redis:
+    image: redis:7
+    restart: on-failure
+    ports:
+      - 6379:6379
+
+volumes:
+  mysql_data:
