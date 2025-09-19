@@ -9,8 +9,8 @@ services:
       - 5000:5000
     environment:
       DB_HOST: mysql
-      DB_NAME: mysql-db
-      DB_USER: user
+      DB_NAME: mysql_db
+      DB_USER: mysqluser
       DB_PASS: mysqlpassword
       REDIS_HOST: redis
       REDIS_PORT: 6379

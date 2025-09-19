@@ -7,8 +7,8 @@ app = Flask(__name__)
 
 # Database connection settings (use env vars in Docker later)
 DB_HOST = os.getenv("DB_HOST", "mysql")
-DB_NAME = os.getenv("DB_NAME", "mysql-db")
-DB_USER = os.getenv("DB_USER", "user")
+DB_NAME = os.getenv("DB_NAME", "mysql_db")
+DB_USER = os.getenv("DB_USER", "mysqluser")
 DB_PASS = os.getenv("DB_PASS", "mysqlpassword")
 
 # Redis connection (optional)
@@ -27,20 +27,11 @@ def get_db_connection():
 @app.route("/add", methods=["POST"])
 def add_user():
     data = request.json
-    name = "Alice"
-    db_name = "testdb"
+    name = data.get("name", "Alice")  # Use payload or default
 
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute(f"CREATE DATABASE testdb;")
-    conn.commit()
-    cur.execute("CREATE USER 'testuser'@'%' IDENTIFIED BY 'testpass';")
-    conn.commit()
-    cur.execute("GRANT ALL PRIVILEGES ON testdb.* TO 'testuser'@'%'; FLUSH PRIVILEGES;")
-    conn.commit()
-    cur.execute("USE testdb; CREATE TABLE users ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL);")
-    conn.commit()
-    cur.execute("INSERT INTO users (name) VALUES ('Robert')")
+    cur.execute("INSERT INTO users (name) VALUES (%s)", (name,))
     conn.commit()
     cur.close()
     conn.close()
@@ -49,6 +40,7 @@ def add_user():
     redis_client.delete("users_cache")
 
     return jsonify({"message": f"User {name} added!"})
+
 
 @app.route("/users", methods=["GET"])
 def get_users():
